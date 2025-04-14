@@ -1,0 +1,17 @@
+{
+  "name": "svg-ai",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.0",
+    "canvas": "^3.1.0",
+    "hono": "^4.7.6",
+    "imagetracerjs": "^1.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "tsx": "^4.7.1"
+  }
+}
