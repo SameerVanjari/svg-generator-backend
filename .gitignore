@@ -28,3 +28,6 @@ lerna-debug.log*
 .DS_Store
 
 package-lock.json
+
+# Local Netlify folder
+.netlify
