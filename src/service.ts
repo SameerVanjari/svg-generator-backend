@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import { processImageFromUrl } from "./utils.js";
+import { processImageFromUrl } from "../src/utils.js";
 import OpenAI from "openai";
 
 export const generateSvgService = async (c: Context) => {

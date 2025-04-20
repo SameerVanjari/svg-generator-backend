@@ -13,5 +13,5 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
   },
-  "include": ["api"]
+  "include": ["api", "src/service.ts", "src/imagetracer.d.ts", "src/utils.ts"]
 }

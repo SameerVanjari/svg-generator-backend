@@ -7,7 +7,7 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import { generateSvgService } from "./service.js";
+import { generateSvgService } from "../src/service.js";
 import { handle } from "hono/vercel";
 
 const app = new Hono().basePath("/api");
