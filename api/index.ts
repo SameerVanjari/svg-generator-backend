@@ -8,6 +8,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { generateSvgService } from "./service.js";
+import { handle } from "hono/vercel";
 
 const app = new Hono().basePath("/api");
 
@@ -32,19 +33,23 @@ app.get("/hello", (c) => {
 app.post("/generate-svg", generateSvgService);
 
 // These are needed to get __filename and __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
-if (process.argv[1] === __filename) {
-  serve(
-    {
-      fetch: app.fetch,
-      port: 8787,
-    },
-    (info: any) => {
-      console.log(`Server is running on http://localhost:${info.port}`);
-    }
-  );
-}
+// if (process.argv[1] === __filename) {
+//   serve(
+//     {
+//       fetch: app.fetch,
+//       port: 8787,
+//     },
+//     (info: any) => {
+//       console.log(`Server is running on http://localhost:${info.port}`);
+//     }
+//   );
+// }
 
-export default app;
+// export default app;
+// ✅ Export for Vercel
+export const GET = handle(app);
+export const POST = handle(app);
+export default handle(app);
