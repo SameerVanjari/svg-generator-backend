@@ -9,7 +9,7 @@ export const processImageFromUrl = (imageUrl: string, options = {}) => {
     let context;
 
     try {
-      console.log("imageUrl => ", imageUrl);
+      // console.log("imageUrl => ", imageUrl);
 
       // 1. Fetch the image data using node-fetch
       const response = await fetch(imageUrl); // Await the fetch
@@ -29,7 +29,7 @@ export const processImageFromUrl = (imageUrl: string, options = {}) => {
       img = new Image();
       img.src = imageBuffer;
 
-      console.log("image => ", img);
+      // console.log("image => ", img);
 
       // 3. Create a Canvas and draw the image
       canvas = new Canvas(img.width, img.height);

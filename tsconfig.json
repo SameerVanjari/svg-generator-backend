@@ -7,7 +7,8 @@
     "outDir": "dist",
     "strict": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "typeRoots": ["src/types/**/*"]
   },
-  "include": ["api/**/*.ts", "src/**/*.ts"]
+  "include": ["api/**/*.ts", "src/**/*.ts", "src/types/**/*.ts"]
 }

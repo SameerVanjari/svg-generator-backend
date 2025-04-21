@@ -2,10 +2,23 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import { processImageFromUrl } from "../src/utils";
+import { generateAIImage } from "../src/service";
 
 dotenv.config();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://ai-svg-gen.netlify.app"
+  ); // You can restrict this to a specific domain instead of '*'
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // Handle preflight request
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") {
     return res
       .status(405)
@@ -21,22 +34,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const openai = new OpenAI({
-      apiKey: process.env.IMAGE_AI_KEY!,
-      baseURL: "https://api.openai.com/v1",
-    });
-
-    const prompt = `A clean, minimalistic black-and-white line drawing icon in vector style, representing the concept of '${userinput}'.`;
-
-    const response = await openai.images.generate({
-      model: "dall-e-2",
-      prompt,
-      n: 2,
-      size: "1024x1024",
-    });
+    const response = await generateAIImage(userinput);
 
     const images = await Promise.all(
-      response.data.map(async (image) => {
+      response?.map(async (image) => {
         const svg = await processImageFromUrl(image.url!, {
           qtres: 0.01,
           linefilter: false,

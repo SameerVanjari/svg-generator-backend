@@ -1,5 +1,5 @@
 import { type Request, type Response } from "express";
-import { processImageFromUrl } from "../src/utils.js";
+import { processImageFromUrl } from "../src/utils";
 import OpenAI from "openai";
 
 export const generateSvgHandler = async (req: Request, res: Response) => {
@@ -32,7 +32,8 @@ export const generateSvgHandler = async (req: Request, res: Response) => {
     });
   }
 };
-const generateAIImage = async (userinput: string) => {
+
+export const generateAIImage = async (userinput: string) => {
   if (!process.env.IMAGE_AI_KEY) {
     throw new Error("OpenAI API key is not set in environment variables");
   }
@@ -48,7 +49,7 @@ const generateAIImage = async (userinput: string) => {
     const response = await openai.images.generate({
       model: "dall-e-2",
       prompt: PROMPT,
-      n: 2,
+      n: 1,
       size: "1024x1024",
     });
 
