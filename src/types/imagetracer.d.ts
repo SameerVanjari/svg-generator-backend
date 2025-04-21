@@ -1,3 +1,4 @@
+// src/types/imagetracer.d.ts
 declare module "imagetracerjs" {
   interface ImageData {
     width: number;
@@ -15,5 +16,6 @@ declare module "imagetracerjs" {
       options?: ImageTracerOptions
     ) => string;
   };
-  export = ImageTracer;
+
+  export default ImageTracer; // ✅ For ES-style default import
 }

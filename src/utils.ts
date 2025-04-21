@@ -1,4 +1,5 @@
 import { Canvas, Image } from "canvas";
+// @ts-ignore
 import ImageTracer from "imagetracerjs";
 
 export const processImageFromUrl = (imageUrl: string, options = {}) => {

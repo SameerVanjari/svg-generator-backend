@@ -1,15 +1,34 @@
-import { type Request, type Response } from "express";
-import { processImageFromUrl } from "../src/utils";
 import OpenAI from "openai";
+import { Request, Response } from "express";
+import dotenv from "dotenv";
+import { processImageFromUrl } from "./utils";
 
-export const generateSvgHandler = async (req: Request, res: Response) => {
+dotenv.config();
+
+export const generateIconHandler = async (req: Request, res: Response) => {
+  if (req.method === "OPTIONS") {
+    return res.status(200).end(); // Handle CORS preflight
+  }
+
+  if (req.method !== "POST") {
+    return res
+      .status(405)
+      .json({ success: false, message: "Method Not Allowed" });
+  }
+
   const { userinput } = req.body;
 
+  if (!userinput) {
+    return res
+      .status(400)
+      .json({ success: false, message: "userinput is required" });
+  }
+
   try {
-    const result = await generateAIImage(userinput);
+    const response = await generateAIImage(userinput);
 
     const images = await Promise.all(
-      result.map(async (image) => {
+      response?.map(async (image) => {
         const svg = await processImageFromUrl(image.url!, {
           qtres: 0.01,
           linefilter: false,
@@ -18,17 +37,17 @@ export const generateSvgHandler = async (req: Request, res: Response) => {
       })
     );
 
-    return res.json({
-      data: { images },
+    res.status(200).json({
       success: true,
       message: "Generated icon successfully",
+      data: { images },
     });
-  } catch (err) {
-    console.error("error: ", err);
-    return res.status(500).json({
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({
       success: false,
       message: "Something went wrong",
-      error: err instanceof Error ? err.message : err,
+      error: error?.message ?? error,
     });
   }
 };
