@@ -5,7 +5,8 @@
     "module": "commonjs",     // Set the module system to 'commonjs' for compatibility with require()
     "moduleResolution": "node", 
     "strict": true,
-    "target": "es6"
+    "target": "es6",
+    "outDir": "dist"
   },
   "include": ["src/**/*"]  // Ensure TypeScript checks all files under `src`
 }
