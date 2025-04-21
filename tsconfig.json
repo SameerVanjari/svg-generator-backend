@@ -1,17 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "strict": true,
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true,
+    "target": "es2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
     "outDir": "dist",
-    "types": ["node"],
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
-  "include": ["api", "src/service.ts", "src/imagetracer.d.ts", "src/utils.ts"]
+  "include": ["api/**/*.ts", "src/**/*.ts"]
 }
