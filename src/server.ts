@@ -17,6 +17,10 @@ app.use(
 );
 app.use(express.json());
 
+app.get("/hello", (req, res) => {
+  res.status(200).json({ message: "Hello from the server!" });
+});
+
 app.post("/api/generate-svg", generateIconHandler as Handler);
 
 app.listen(PORT, () => {
