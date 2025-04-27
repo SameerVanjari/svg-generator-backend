@@ -1,7 +1,7 @@
 import express, { Handler } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { generateIconHandler } from "./service";
+import { generateIconHandler, imageUrlProxyHandler } from "./service";
 
 dotenv.config();
 
@@ -22,6 +22,8 @@ app.get("/hello", (req, res) => {
 });
 
 app.post("/api/generate-svg", generateIconHandler as Handler);
+
+app.get("/proxy", imageUrlProxyHandler as Handler);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server listening on http://localhost:${PORT}`);

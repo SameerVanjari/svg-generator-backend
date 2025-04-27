@@ -27,15 +27,18 @@ export const generateIconHandler = async (req: Request, res: Response) => {
   try {
     const response = await generateAIImage(userinput);
 
-    const images = await Promise.all(
-      response?.map(async (image) => {
-        const svg = await processImageFromUrl(image.url!, {
-          qtres: 0.01,
-          linefilter: false,
-        });
-        return { ...image, svg };
-      })
-    );
+    // const images = await Promise.all(
+    //   response?.map(async (image) => {
+    //     const svg = await processImageFromUrl(image.url!, {
+    //       qtres: 0.01,
+    //       linefilter: false,
+    //     });
+    //     return { ...image, svg };
+    //   })
+    // );
+    const images = response?.map((image) => {
+      return { url: image.url };
+    });
 
     res.status(200).json({
       success: true,
@@ -76,5 +79,27 @@ export const generateAIImage = async (userinput: string) => {
   } catch (err) {
     console.error("Error while generating image from OpenAI:", err);
     throw new Error("Failed to generate image");
+  }
+};
+
+export const imageUrlProxyHandler = async (req: Request, res: Response) => {
+  const imageUrl = req.query.url;
+  if (!imageUrl) {
+    return res.status(400).send("Missing url parameter");
+  }
+
+  try {
+    const response = await fetch(imageUrl as string);
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    res.set(
+      "Content-Type",
+      response.headers.get("Content-Type") || "image/png"
+    );
+    res.set("Access-Control-Allow-Origin", "*");
+    res.send(buffer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Failed to fetch image");
   }
 };
