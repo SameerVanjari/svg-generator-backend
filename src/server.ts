@@ -1,9 +1,21 @@
 import express, { Handler } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { generateIconHandler, imageUrlProxyHandler } from "./service";
+import { generateIconHandler, imageUrlProxyHandler } from "./controller/image";
+import {
+  getAdmin,
+  getCurrentUser,
+  loginUser,
+  logoutUser,
+  registerUser,
+} from "./controller/auth";
+import { PrismaClient } from "@prisma/client";
+import cookieParser from "cookie-parser";
+import { authenticateToken } from "./middlewares/auth";
 
 dotenv.config();
+
+export const prisma = new PrismaClient();
 
 const app = express();
 const PORT = process.env.PORT || 8787;
@@ -16,11 +28,26 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/hello", (req, res) => {
   res.status(200).json({ message: "Hello from the server!" });
 });
 
+// auth
+app.post("/api/register", registerUser as Handler);
+
+app.post("/api/login", loginUser as Handler);
+
+app.post("/api/logout", logoutUser as Handler);
+
+// 🔐 Protected route
+app.get("/api/me", authenticateToken, getCurrentUser as Handler);
+
+// 🔐 Admin route example
+app.get("/api/admin", authenticateToken, getAdmin as Handler);
+
+// image generation
 app.post("/api/generate-svg", generateIconHandler as Handler);
 
 app.get("/proxy", imageUrlProxyHandler as Handler);
