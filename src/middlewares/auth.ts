@@ -44,7 +44,7 @@ export const authenticateToken = (
 ): void => {
   const JWT_SECRET = process.env.JWT_SECRET!;
   const token = req.cookies?.token;
-  console.log(token);
+  console.log("token", token);
   if (!token) {
     res.sendStatus(401);
     return;
@@ -57,4 +57,29 @@ export const authenticateToken = (
   } catch {
     res.sendStatus(403);
   }
+};
+
+export const optionalAuth = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  const authHeader = req.headers.authorization;
+  const token =
+    req.cookies?.token ||
+    (authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : undefined);
+
+  if (!token) {
+    return next(); // No token, proceed anonymously
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    req.user = decoded as { id: string; role: string };
+  } catch (err: any) {
+    console.warn("Invalid JWT token:", err.message);
+    // Optional: clear cookie or log
+  }
+
+  next();
 };

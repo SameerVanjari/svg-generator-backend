@@ -20,7 +20,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-
+  console.log("login req.body", email, password);
   const user = await getUser(email);
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -29,11 +29,19 @@ export const loginUser = async (req: Request, res: Response) => {
 
   const token = generateToken(user as any);
 
+  console.log("user => ", user);
+
   res
     .cookie("token", token, {
       httpOnly: true,
       secure: false, // set to true in production with HTTPS
       sameSite: "lax",
+    })
+    .cookie("user_id", user.id, {
+      httpOnly: true,
+      secure: false, // set to true in production with HTTPS
+      sameSite: "lax",
+      maxAge: 86400000, // 1 day
     })
     .json({ message: "Logged in successfully", data: { user } });
 };
