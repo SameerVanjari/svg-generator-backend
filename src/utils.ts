@@ -158,6 +158,7 @@ export const initializeRateLimiters = () => {
 
   guestLimiter = new RateLimiterRedis({
     storeClient: redisClient,
+    useRedisPackage: true,
     points: 2,
     duration: 86400,
     keyPrefix: "rate",

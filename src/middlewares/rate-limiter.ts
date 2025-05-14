@@ -31,7 +31,7 @@ export async function rateLimitMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
-) {
+): Promise<void> {
   try {
     // Assume `req.user` is set by your auth middleware
     const role = req.user?.role || "guest";
@@ -62,10 +62,11 @@ export async function rateLimitMiddleware(
 
     if (!limiter) {
       console.error("Limiter is undefined for role:", role);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         message: "Rate limiter is not configured properly.",
       });
+      return; // Ensure no further execution
     }
 
     await limiter.consume(limiterKey); // userId or IP

@@ -23,11 +23,13 @@ const app = express();
 const PORT = process.env.PORT || 8787;
 
 export const redisClient: RedisClientType = createClient({
-  socket: {
-    host: "82.25.105.25", // Explicitly set the host
-    port: 6379, // Explicitly set the port
-  },
-  password: "Chechnya@334", // Move password to the top level
+  // socket: {
+  //   host: "82.25.105.25", // Explicitly set the host
+  //   port: 6379, // Explicitly set the port
+  // },
+
+  // password: "Chechnya@334", // Move password to the top level
+  url: "redis://default:Chech%40334@82.25.25:6379",
 });
 
 redisClient.on("error", (err) => {
