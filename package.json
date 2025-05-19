@@ -14,6 +14,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
     "express-session": "^1.18.1",
     "imagetracerjs": "^1.2.6",
     "jsonwebtoken": "^9.0.2",
@@ -21,7 +22,9 @@
     "openai": "^4.95.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "prisma": "^6.7.0"
+    "prisma": "^6.7.0",
+    "rate-limiter-flexible": "^7.1.0",
+    "redis": "^5.0.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
