@@ -8,56 +8,147 @@ import { createUser, getUser, getUserById } from "../service";
 export const registerUser = async (req: Request, res: Response) => {
   const { email, password, name } = req.body;
 
-  const existing = await getUser(email);
-  if (existing) return res.status(400).json({ error: "User already exists" });
+  try {
+    const existing = await getUser(email);
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+        data: null,
+        error: "USER_EXISTS",
+      });
+    }
 
-  const user = await createUser(email, password, name);
+    const user = await createUser(email, password, name);
 
-  console.log("user created:", user);
-
-  res.status(201).json({ message: "User registered" });
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      data: { user: { id: user.id, email: user.email, name: user.name } },
+      error: null,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Registration failed",
+      data: null,
+      error: (err as Error).message,
+    });
+  }
 };
 
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log("login req.body", email, password);
-  const user = await getUser(email);
+  try {
+    const user = await getUser(email);
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ error: "Invalid credentials" });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+        data: null,
+        error: "INVALID_CREDENTIALS",
+      });
+    }
+
+    const token = generateToken(user as any);
+
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: false, // set to true in production with HTTPS
+        sameSite: "lax",
+      })
+      .cookie("user_id", user.id, {
+        httpOnly: true,
+        secure: false, // set to true in production with HTTPS
+        sameSite: "lax",
+        maxAge: 86400000, // 1 day
+      })
+      .json({
+        success: true,
+        message: "Logged in successfully",
+        data: { user: { id: user.id, email: user.email, name: user.name } },
+        error: null,
+      });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Login failed",
+      data: null,
+      error: (err as Error).message,
+    });
   }
-
-  const token = generateToken(user as any);
-
-  console.log("user => ", user);
-
-  res
-    .cookie("token", token, {
-      httpOnly: true,
-      secure: false, // set to true in production with HTTPS
-      sameSite: "lax",
-    })
-    .cookie("user_id", user.id, {
-      httpOnly: true,
-      secure: false, // set to true in production with HTTPS
-      sameSite: "lax",
-      maxAge: 86400000, // 1 day
-    })
-    .json({ message: "Logged in successfully", data: { user } });
 };
 
 // 🚪 Logout
 export const logoutUser = async (req: Request, res: Response) => {
-  res.clearCookie("token").json({ message: "Logged out" });
+  try {
+    res.clearCookie("token").json({
+      success: true,
+      message: "Logged out successfully",
+      data: null,
+      error: null,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Logout failed",
+      data: null,
+      error: (err as Error).message,
+    });
+  }
 };
 
 export const getCurrentUser = async (req: Request, res: Response) => {
-  const user = await getUserById(req.user.id);
-  if (!user) return res.status(404).json({ error: "User not found" });
-  res.json(user);
+  try {
+    const user = await getUserById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        data: null,
+        error: "USER_NOT_FOUND",
+      });
+    }
+    res.json({
+      success: true,
+      message: "User fetched successfully",
+      data: { user: { id: user.id, email: user.email, name: user.name, role: user.role } },
+      error: null,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch user",
+      data: null,
+      error: (err as Error).message,
+    });
+  }
 };
 
 export const getAdmin = async (req: Request, res: Response) => {
-  if (req.user.role !== "admin") return res.sendStatus(403);
-  res.json({ message: "Welcome admin!" });
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden: Admins only",
+        data: null,
+        error: "FORBIDDEN",
+      });
+    }
+    res.json({
+      success: true,
+      message: "Welcome admin!",
+      data: null,
+      error: null,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch admin data",
+      data: null,
+      error: (err as Error).message,
+    });
+  }
 };

@@ -10,17 +10,23 @@ export const generateIconHandler = async (req: Request, res: Response) => {
   }
 
   if (req.method !== "POST") {
-    return res
-      .status(405)
-      .json({ success: false, message: "Method Not Allowed" });
+    return res.status(405).json({
+      success: false,
+      message: "Method Not Allowed",
+      data: null,
+      error: "METHOD_NOT_ALLOWED",
+    });
   }
 
   const { userinput } = req.body;
 
   if (!userinput) {
-    return res
-      .status(400)
-      .json({ success: false, message: "userinput is required" });
+    return res.status(400).json({
+      success: false,
+      message: "userinput is required",
+      data: null,
+      error: "USERINPUT_REQUIRED",
+    });
   }
 
   try {
@@ -43,13 +49,15 @@ export const generateIconHandler = async (req: Request, res: Response) => {
       success: true,
       message: "Generated icon successfully",
       data: { images },
+      error: null,
     });
   } catch (error: any) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Something went wrong",
-      error: error?.message ?? error,
+      message: "Failed to generate icon",
+      data: null,
+      error: error?.message ?? "INTERNAL_SERVER_ERROR",
     });
   }
 };
@@ -84,7 +92,12 @@ export const generateAIImage = async (userinput: string) => {
 export const imageUrlProxyHandler = async (req: Request, res: Response) => {
   const imageUrl = req.query.url;
   if (!imageUrl) {
-    return res.status(400).send("Missing url parameter");
+    return res.status(400).json({
+      success: false,
+      message: "Missing url parameter",
+      data: null,
+      error: "URL_REQUIRED",
+    });
   }
 
   try {
@@ -97,8 +110,13 @@ export const imageUrlProxyHandler = async (req: Request, res: Response) => {
     );
     res.set("Access-Control-Allow-Origin", "*");
     res.send(buffer);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    res.status(500).send("Failed to fetch image");
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch image",
+      data: null,
+      error: error?.message ?? "INTERNAL_SERVER_ERROR",
+    });
   }
 };

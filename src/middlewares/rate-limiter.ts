@@ -65,17 +65,34 @@ export async function rateLimitMiddleware(
       res.status(500).json({
         success: false,
         message: "Rate limiter is not configured properly.",
+        data: null,
+        error: "LIMITER_NOT_CONFIGURED",
       });
-      return; // Ensure no further execution
+      return;
     }
 
     await limiter.consume(limiterKey); // userId or IP
     next();
-  } catch (rejRes) {
+  } catch (rejRes: any) {
     console.log("rejRes", rejRes);
+    let error = "TOO_MANY_REQUESTS";
+    let message = "Too many requests. Please try again later.";
+    let data = null;
+
+    // If guest, suggest registration
+    if ((req.user?.role || "guest") === "guest") {
+      error = "RATE_LIMIT_GUEST";
+      message = "Rate limit reached. Please register to continue.";
+      data = { mustRegister: true, retryAfter: rejRes?.msBeforeNext ?? null };
+    } else {
+      data = { retryAfter: rejRes?.msBeforeNext ?? null };
+    }
+
     res.status(429).json({
       success: false,
-      message: "Too many requests. Please try again later.",
+      message,
+      data,
+      error,
     });
   }
 }

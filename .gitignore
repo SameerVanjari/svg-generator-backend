@@ -29,6 +29,7 @@ lerna-debug.log*
 .DS_Store
 
 package-lock.json
+bun.lock
 
 # Local Netlify folder
 .netlify
